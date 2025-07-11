@@ -1,5 +1,12 @@
 export default async function handler(req, res) {
-  const { message } = req.body;  // itt nem await req.json(), hanem req.body
+  const buffers = [];
+
+  for await (const chunk of req.body) {
+    buffers.push(chunk);
+  }
+
+  const bodyString = Buffer.concat(buffers).toString();
+  const { message } = JSON.parse(bodyString);
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -17,9 +24,5 @@ export default async function handler(req, res) {
   });
 
   const data = await response.json();
-  if (data.choices && data.choices[0]) {
   res.status(200).json({ reply: data.choices[0].message.content });
-} else {
-  res.status(500).json({ reply: "Hoppá! Nem jött válasz a mesterséges intelligenciától 😓" });
-  }
 }

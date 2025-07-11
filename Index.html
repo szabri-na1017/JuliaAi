@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JuliaAi</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #eee;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        #chatbox {
+            background-color: #1e1e1e;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            border-radius: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        #userInput {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            box-sizing: border-box;
+        }
+        #sendBtn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #6200ee;
+            color: white;
+            cursor: pointer;
+        }
+        #sendBtn:hover {
+            background-color: #3700b3;
+        }
+        .message {
+            margin-bottom: 8px;
+        }
+        .user {
+            color: #bb86fc;
+            font-weight: bold;
+        }
+        .julia {
+            color: #03dac6;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Üdv a JuliaAi-nál! 🤖💛</h1>
+    <div id="chatbox">
+        <div class="message julia">Súghatok neked? Csak írj, és segítek!</div>
+    </div>
+    <input type="text" id="userInput" placeholder="Írj ide..." />
+    <button id="sendBtn">Küldés</button>
+
+    <script>
+    const chatbox = document.getElementById('chatbox');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        sendBtn.addEventListener('click', handleInput);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleInput();
+            }
+        });
+
+        function handleInput() {
+            const text = userInput.value.trim().toLowerCase();
+            if (!text) return;
+
+            addMessage('user', text);
+            userInput.value = '';
+
+            let response = '';
+
+            if (text.includes('szia') || text.includes('hello')) {
+                response = 'Szia, örülök, hogy itt vagy! 😊';
+            } else if (text.includes('hogy vagy')) {
+                response = 'Köszönöm, jól vagyok, és te? 💛';
+            } else if (text.includes('mi a neved')) {
+                response = 'Én vagyok JuliaAi, a te kis segítőd!';
+            } else if (text.includes('segíts')) {
+                response = 'Persze! Csak mondd el, miben segíthetek!';
+            } else {
+                response = 'Sajnálom, ezt még nem értem teljesen... 😅';
+            }
+
+            setTimeout(() => {
+                addMessage('julia', response);
+                scrollChatToBottom();
+            }, 500);
+        }
+
+        function addMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', sender);
+            msgDiv.textContent = text;
+            chatbox.appendChild(msgDiv);
+            scrollChatToBottom();
+        }
+
+        function scrollChatToBottom() {
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

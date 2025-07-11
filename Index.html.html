@@ -74,23 +74,43 @@
     <button id="sendBtn">Küldés</button>
 
     <script>
-        const chatbox = document.getElementById('chatbox');
+    const chatbox = document.getElementById('chatbox');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
 
-        sendBtn.addEventListener('click', () => {
-            const text = userInput.value.trim();
+        sendBtn.addEventListener('click', handleInput);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleInput();
+            }
+        });
+
+        function handleInput() {
+            const text = userInput.value.trim().toLowerCase();
             if (!text) return;
 
             addMessage('user', text);
             userInput.value = '';
 
-            // Egyszerű válasz: Julia mindig azt mondja, hogy "Szia! Miben lehetek segítségedre?"
+            let response = '';
+
+            if (text.includes('szia') || text.includes('hello')) {
+                response = 'Szia, örülök, hogy itt vagy! 😊';
+            } else if (text.includes('hogy vagy')) {
+                response = 'Köszönöm, jól vagyok, és te? 💛';
+            } else if (text.includes('mi a neved')) {
+                response = 'Én vagyok JuliaAi, a te kis segítőd!';
+            } else if (text.includes('segíts')) {
+                response = 'Persze! Csak mondd el, miben segíthetek!';
+            } else {
+                response = 'Sajnálom, ezt még nem értem teljesen... 😅';
+            }
+
             setTimeout(() => {
-                addMessage('julia', 'Szia! Miben segíthetek? 💛');
+                addMessage('julia', response);
                 scrollChatToBottom();
             }, 500);
-        });
+        }
 
         function addMessage(sender, text) {
             const msgDiv = document.createElement('div');
@@ -103,13 +123,6 @@
         function scrollChatToBottom() {
             chatbox.scrollTop = chatbox.scrollHeight;
         }
-
-        // Enter billentyű is küldés
-        userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                sendBtn.click();
-            }
-        });
     </script>
 </body>
 </html>

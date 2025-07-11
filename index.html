@@ -1,121 +1,121 @@
-6<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>JuliaAi</title>
-    <style>
-        body {
-            background-color: #121212;
-            color: #eee;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            height: 100vh;
-            margin: 0;
-        }
-        h1 {
-            margin-bottom: 10px;
-        }
-        #chatbox {
-            background-color: #1e1e1e;
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            border-radius: 10px;
-            padding: 10px;
-            overflow-y: auto;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        #userInput {
-            width: 100%;
-            max-width: 600px;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
-            box-sizing: border-box;
-        }
-        #sendBtn {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
-            background-color: #6200ee;
-            color: white;
-            cursor: pointer;
-        }
-        #sendBtn:hover {
-            background-color: #3700b3;
-        }
-        .message {
-            margin-bottom: 8px;
-        }
-        .user {
-            color: #bb86fc;
-            font-weight: bold;
-        }
-        .julia {
-            color: #03dac6;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JuliaAi</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #chatbox {
+      background-color: #1e1e1e;
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      border-radius: 10px;
+      padding: 10px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    #userInput {
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      box-sizing: border-box;
+    }
+    #sendBtn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background-color: #6200ee;
+      color: white;
+      cursor: pointer;
+    }
+    #sendBtn:hover {
+      background-color: #3700b3;
+    }
+    .message {
+      margin-bottom: 8px;
+    }
+    .user {
+      color: #bb86fc;
+      font-weight: bold;
+    }
+    .julia {
+      color: #03dac6;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <h1>Üdv a JuliaAi-nál! 🤖💛</h1>
-    <div id="chatbox">
-        <div class="message julia">Súghatok neked? Csak írj, és segítek!</div>
-    </div>
-    <input type="text" id="userInput" placeholder="Írj ide..." />
-    <button id="sendBtn">Küldés</button>
-    <script type="module">
-  import OpenAI from "https://cdn.skypack.dev/openai";
+  <h1>Üdv a JuliaAi-nál! 🤖💛</h1>
+  <div id="chatbox">
+    <div class="message julia">Szia! Én vagyok Julia. Írj nyugodtan, bármiről is legyen szó!</div>
+  </div>
+  <input type="text" id="userInput" placeholder="Írj ide..." />
+  <button id="sendBtn">Küldés</button>
 
-  const openai = new OpenAI({
-    apiKey: "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", // << Ez a kulcsod
-    dangerouslyAllowBrowser: true, // Fontos, mert böngészőben vagyunk
-  });
+  <script>
+    const chatbox = document.getElementById('chatbox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
 
-  async function getJuliaResponse(prompt) {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
     });
 
-    return completion.choices[0].message.content;
-  }
+    function addMessage(sender, text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('message', sender);
+      msgDiv.textContent = text;
+      chatbox.appendChild(msgDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
 
-  // DOM elemek
-  const chatbox = document.getElementById('chatbox');
-  const userInput = document.getElementById('userInput');
-  const sendBtn = document.getElementById('sendBtn');
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
 
-  sendBtn.addEventListener('click', async () => {
-    const text = userInput.value.trim();
-    if (!text) return;
+      addMessage('user', text);
+      userInput.value = '';
 
-    addMessage('user', text);
-    userInput.value = '';
+      addMessage('julia', 'Gondolkodom... 🤔');
 
-    const juliaResponse = await getJuliaResponse(text);
-    addMessage('julia', juliaResponse);
-  });
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text }),
+        });
 
-  function addMessage(sender, text) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', sender);
-    msgDiv.textContent = text;
-    chatbox.appendChild(msgDiv);
-    chatbox.scrollTop = chatbox.scrollHeight;
-  }
-
-  userInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') sendBtn.click();
-  });
-    </script>
+        const data = await response.json();
+        const lastJulia = document.querySelector('.julia:last-of-type');
+        lastJulia.textContent = data.reply;
+      } catch (error) {
+        console.error('Hiba:', error);
+        const lastJulia = document.querySelector('.julia:last-of-type');
+        lastJulia.textContent = 'Hoppá, technikai gond van 😓';
+      }
+    }
+  </script>
 </body>
 </html>

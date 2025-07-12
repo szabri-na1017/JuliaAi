@@ -1,28 +1,38 @@
 export default async function handler(req, res) {
-  const buffers = [];
-
-  for await (const chunk of req.body) {
-    buffers.push(chunk);
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Csak POST kérés engedélyezett!" });
   }
 
-  const bodyString = Buffer.concat(buffers).toString();
-  const { message } = JSON.parse(bodyString);
+  const { message } = req.body;
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-4",
-      messages: [
-        { role: "system", content: "Te vagy Julia, egy kedves, vicces, empatikus, beszélgetős magyar asszisztens. Segíts mindenben!" },
-        { role: "user", content: message },
-      ],
-    }),
-  });
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "Te vagy Julia, egy kedves, vicces, empatikus, beszélgetős magyar asszisztens. Segíts mindenben!",
+          },
+          { role: "user", content: message },
+        ],
+      }),
+    });
 
-  const data = await response.json();
-  res.status(200).json({ reply: data.choices[0].message.content });
+    const data = await response.json();
+
+    if (data.error) {
+      return res.status(500).json({ error: data.error.message });
+    }
+
+    res.status(200).json({ reply: data.choices[0].message.content });
+  } catch (error) {
+    console.error("Hiba a mesterséges intelligencia hívás során:", error);
+    res.status(500).json({ error: "Hoppá! Valami elromlott 😓" });
+  }
 }
